@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cipher Chase</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 0;
+            background-color: #0a0a0a;
+            color: #00ff00;
+            overflow-x: hidden;
+        }
+        .level {
+            display: none;
+            padding: 20px;
+            border: 2px solid #00ff00;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .active { display: block; }
+        input[type="text"] {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+        }
+        button {
+            background: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        button:hover {
+            background-color: #0f0;
+            color: #000;
+        }
+        .sbox-table {
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        .sbox-table td, .sbox-table th {
+            border: 1px solid #00ff00;
+            padding: 8px;
+            text-align: center;
+        }
+        .home-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .title {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 10;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+        }
+        .start-btn {
+            font-size: 1.5rem;
+            padding: 15px 40px;
+            background-color: transparent;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        .start-btn:hover {
+            background-color: #00ff00;
+            color: #000;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        .matrix-code {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .cipher-animation {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 1.5rem;
+            bottom: 10%;
+            z-index: 10;
+            opacity: 0.8;
+        }
+        .game-container {
+            display: none;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: rgba(0,0,0,0.7);
+            border-bottom: 1px solid #00ff00;
+            margin-bottom: 20px;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .binary-particle {
+            position: absolute;
+            color: #00ff00;
+            font-family: monospace;
+            font-size: 12px;
+            opacity: 0.7;
+            user-select: none;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            from {
+                transform: translateY(-20px);
+                opacity: 0.7;
+            }
+            to {
+                transform: translateY(calc(100vh + 20px));
+                opacity: 0;
+            }
+        }
+        .cipher-text {
+            display: inline-block;
+            margin: 0 4px;
+            animation: decrypt 3s infinite;
+        }
+        @keyframes decrypt {
+            0% {
+                content: attr(data-value);
+                opacity: 0.3;
+            }
+            50% {
+                content: attr(data-decrypt);
+                opacity: 1;
+            }
+            100% {
+                content: attr(data-value);
+                opacity: 0.3;
+            }
+        }
+        #scoreboard-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #00ff00;
+            padding: 10px 18px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        .hint-section {
+            margin: 15px 0;
+        }
+        .hint-btn {
+            background: #002200;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        .hint-content {
+            border: 1px solid #00ff00;
+            padding: 10px;
+            margin-top: 10px;
+            background: #001100;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Page -->
+    <div id="home" class="home-container">
+        <canvas id="matrix-canvas" class="matrix-code"></canvas>
+        <h1 class="title">Welcome to Cipher Chase</h1>
+        <div class="cipher-animation" id="cipher-animation"></div>
+        <button id="start-game" class="start-btn">START MISSION</button>
+    </div>
+
+    <!-- Game Container -->
+    <div id="game" class="game-container">
+        <div class="header">
+            <div class="logo">CIPHER CHASE</div>
+            <button id="reset-game">Reset Game</button>
+        </div>
+        
+        <!-- Level 1 -->
+<div id="level1" class="level active">
+    <h2>Level 1: Caesar Cipher (Shift= -3)</h2>
+    <p id="level1-question"></p>
+    <input type="text" id="answer1" placeholder="Enter solution">
+    <button onclick="validate(1)">Submit</button>
+    <div class="hint-section">
+        <button class="hint-btn" onclick="toggleHint(1)">Show Hint</button>
+        <div class="hint-content">
+            <p>
+                <a href="https://computerscienced.co.uk/site/caesar-cipher-wheel/caesar-cipher/" target="_blank" rel="noopener noreferrer">Open Example in New Tab</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+        
+        <!-- Level 2: Caesar Encrypt -->
+        <div id="level2" class="level">
+            <h2>Level 2: Caesar Cipher (Shift=4)</h2>
+            <p id="level2-question"></p>
+            <input type="text" id="answer2" placeholder="Enter ciphertext">
+            <button onclick="validate(2)">Submit</button>
+            <div class="hint-section">
+                <button class="hint-btn" onclick="toggleHint(2)">Show Hint</button>
+                <div class="hint-content">
+                    <p>Shift each letter forward by 4 positions in the alphabet (A→E, B→F, etc.).</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Level 3: S-Box -->
+        <div id="level3" class="level">
+            <h2>Level 3: 6-to-4-bit S-Box</h2>
+            <p id="level3-question"></p>
+            <table class="sbox-table">
+                <tr><th>Input</th><th>00</th><th>01</th><th>10</th><th>11</th></tr>
+                <tr><td>0xxxx0</td><td>1110</td><td>0101</td><td>0010</td><td>1001</td></tr>
+                <tr><td>0xxxx1</td><td>1011</td><td>0000</td><td>0111</td><td>1100</td></tr>
+                <tr><td>1xxxx0</td><td>0011</td><td>1000</td><td>1111</td><td>0100</td></tr>
+                <tr><td>1xxxx1</td><td>1010</td><td>0001</td><td>1101</td><td>0110</td></tr>
+            </table>
+            <input type="text" id="answer3" placeholder="Enter 4-bit output">
+            <button onclick="validate(3)">Submit</button>
+            <div class="hint-section">
+                <button class="hint-btn" onclick="toggleHint(3)">Show Hint</button>
+                <div class="hint-content">
+                    <p>Use the first and last bits to determine the row, and bits 2-3 and 4-5 for the column.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Level 4: RSA -->
+        <div id="level4" class="level">
+            <h2>Level 4: RSA Encryption</h2>
+            <p id="level4-question"></p>
+            <input type="text" id="answer4" placeholder="Enter ciphertext">
+            <button onclick="validate(4)">Submit</button>
+            <div class="hint-section">
+                <button class="hint-btn" onclick="toggleHint(4)">Show Hint</button>
+                <div class="hint-content">
+                    <p>Use the formula: ciphertext = (plaintext<sup>e</sup>) mod n</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Completion -->
+        <div id="completion" class="level">
+            <h2>Congratulations! 🎉</h2>
+            <p>You've solved all cipher challenges!</p>
+            <h3 id="scoreboard-final"></h3>
+        </div>
+    </div>
+
+    <!-- Floating Scoreboard -->
+    <div id="scoreboard-float">
+        Current Score: <span id="current-score">400</span>
+    </div>
+
+    <script>
+        // ===== QUESTION BANKS =====
+        const questionBanks = {
+            caesarDecrypt: [
+                { ciphertext: "WKH GRJ IURJ", shift: 3, answer: "the dog frog" },
+                { ciphertext: "SBWKRQ VHFUHW", shift: 3, answer: "python secret" },
+                { ciphertext: "FOLS WKH FDW", shift: 3, answer: "clip the cat" }
+            ],
+            caesarEncrypt: [
+                { plaintext: "HELLO", shift: 4, answer: "LIPPS" },
+                { plaintext: "WORLD", shift: 4, answer: "ASVPH" },
+                { plaintext: "CRYPTO", shift: 4, answer: "GVCTXS" }
+            ],
+            sbox: [
+                { input: "011011", answer: "1100" },
+                { input: "101010", answer: "0000" },
+                { input: "110011", answer: "1100" }
+            ],
+            rsa: [
+                { m: 3, e: 7, n: 33, answer: "9" },
+                { m: 5, e: 3, n: 14, answer: "13" },
+                { m: 2, e: 5, n: 10, answer: "2" }
+            ]
+        };
+
+        // ===== GAME STATE =====
+        let currentQuestions = {
+            1: null,
+            2: null,
+            3: null,
+            4: null
+        };
+
+        let attempts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+        // ===== INITIALIZE GAME =====
+        function initializeGame() {
+            // Randomly select questions
+            currentQuestions[1] = questionBanks.caesarDecrypt[Math.floor(Math.random() * 3)];
+            currentQuestions[2] = questionBanks.caesarEncrypt[Math.floor(Math.random() * 3)];
+            currentQuestions[3] = questionBanks.sbox[Math.floor(Math.random() * 3)];
+            currentQuestions[4] = questionBanks.rsa[Math.floor(Math.random() * 3)];
+            
+            // Update question displays
+            document.getElementById('level1-question').textContent = 
+                `Decrypt: "${currentQuestions[1].ciphertext}" (Shift=${currentQuestions[1].shift})`;
+            document.getElementById('level2-question').textContent = 
+                `Encrypt "${currentQuestions[2].plaintext}" using shift=${currentQuestions[2].shift}`;
+            document.getElementById('level3-question').textContent = 
+                `Convert ${currentQuestions[3].input} using this table:`;
+            document.getElementById('level4-question').textContent = 
+                `Encrypt "${currentQuestions[4].m}" with public key (e=${currentQuestions[4].e}, n=${currentQuestions[4].n})`;
+        }
+
+        // ===== SCOREBOARD =====
+        function calculateScore() {
+            let score = 0;
+            for (let i = 1; i <= 4; i++) {
+                let levelScore = Math.max(100 - (attempts[i] - 1) * 10, 10);
+                score += levelScore;
+            }
+            return score;
+        }
+        function updateScoreboard() {
+            document.getElementById('current-score').textContent = calculateScore();
+        }
+
+        // ===== VALIDATION =====
+        function validate(level) {
+            const answerInput = document.getElementById(`answer${level}`);
+            let userAnswer = answerInput.value.trim();
+            if (level === 1) userAnswer = userAnswer.toLowerCase();
+            if (level === 2) userAnswer = userAnswer.toUpperCase();
+
+            attempts[level] = (attempts[level] || 0) + 1;
+            let correct = false;
+            switch(level) {
+                case 1:
+                    correct = (userAnswer === currentQuestions[1].answer);
+                    break;
+                case 2:
+                    correct = (userAnswer === currentQuestions[2].answer);
+                    break;
+                case 3:
+                    correct = (userAnswer === currentQuestions[3].answer);
+                    break;
+                case 4:
+                    correct = (userAnswer === currentQuestions[4].answer);
+                    break;
+            }
+            if (correct) {
+                document.getElementById(`level${level}`).classList.remove('active');
+                const nextLevel = document.getElementById(`level${level + 1}`);
+                if (nextLevel) {
+                    nextLevel.classList.add('active');
+                } else {
+                    document.getElementById('completion').classList.add('active');
+                    const score = calculateScore();
+                    document.getElementById('scoreboard-final').innerHTML = `Your Score: <span style="color:#00ff00">${score}</span> <br>
+                        <small>(Attempts: Level 1 - ${attempts[1]}, Level 2 - ${attempts[2]}, Level 3 - ${attempts[3]}, Level 4 - ${attempts[4]})</small>`;
+                    document.getElementById('scoreboard-float').style.display = 'none';
+                }
+                answerInput.value = '';
+                alert("Correct! Progressing to next level.");
+            } else {
+                alert("Incorrect answer. Try again!");
+            }
+            updateScoreboard();
+        }
+
+        // ===== HINTS =====
+        function toggleHint(level) {
+            const hintContent = document.querySelector(`#level${level} .hint-content`);
+            if (hintContent) {
+                hintContent.style.display = hintContent.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        // ===== ANIMATIONS =====
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        window.addEventListener('resize', function() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$#@&%!?*+-=~<>[]{}|";
+        const fontSize = 12;
+        const columns = Math.floor(width / fontSize);
+        let drops = [];
+        for (let i = 0; i < columns; i++) drops[i] = 1;
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = "#00ff00";
+            ctx.font = fontSize + "px monospace";
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters.charAt(Math.floor(Math.random() * characters.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        function createBinaryParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'binary-particle';
+            particle.textContent = Math.random() > 0.5 ? '0' : '1';
+            const leftPos = Math.random() * window.innerWidth;
+            particle.style.left = leftPos + 'px';
+            const duration = 3 + Math.random() * 5;
+            particle.style.animationDuration = duration + 's';
+            document.body.appendChild(particle);
+            setTimeout(() => { particle.remove(); }, duration * 1000);
+        }
+        function initHomeAnimations() {
+            setInterval(drawMatrix, 50);
+            setInterval(createBinaryParticle, 300);
+            const cipherText = "BYZANDER";
+            const cipherContainer = document.getElementById('cipher-animation');
+            let encryptedChars = [];
+            for (let i = 0; i < cipherText.length; i++) {
+                if (cipherText[i] === ' ') encryptedChars.push(' ');
+                else encryptedChars.push(String.fromCharCode(cipherText.charCodeAt(i) + 3));
+            }
+            let html = '';
+            for (let i = 0; i < cipherText.length; i++) {
+                if (cipherText[i] === ' ') html += ' ';
+                else html += `<span class="cipher-text" style="animation-delay: ${i * 0.1}s">${encryptedChars[i]}</span>`;
+            }
+            cipherContainer.innerHTML = html;
+            document.querySelectorAll('.cipher-text').forEach((el, idx) => {
+                setInterval(() => {
+                    el.textContent = Math.random() > 0.5 ? encryptedChars[idx] : cipherText[idx];
+                }, 100 + Math.random() * 400);
+            });
+        }
+
+        // ===== GAME FLOW =====
+        document.getElementById('start-game').addEventListener('click', function() {
+            initializeGame();
+            document.getElementById('home').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            document.getElementById('scoreboard-float').style.display = 'block';
+            updateScoreboard();
+        });
+        document.getElementById('reset-game').addEventListener('click', function() {
+            document.getElementById('game').style.display = 'none';
+            document.getElementById('home').style.display = 'flex';
+            document.querySelectorAll('.level').forEach(level => level.classList.remove('active'));
+            document.getElementById('level1').classList.add('active');
+            document.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+            attempts = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            initializeGame();
+            updateScoreboard();
+            document.getElementById('scoreboard-float').style.display = 'none';
+            document.getElementById('scoreboard-final').innerHTML = '';
+        });
+        window.onload = function() { initHomeAnimations(); };
+    </script>
+</body>
+</html>
