@@ -12,9 +12,6 @@ Cipher Chase turns cryptography into an interactive experience.
 
 Instead of reading theory, players actively solve encryption challenges including classical ciphers, substitution tables, and public-key math.
 
-The goal is simple:
-Think like a cryptographer. Solve like an attacker.
-
 ---
 
 ## Features
@@ -68,10 +65,6 @@ If you can solve every level manually, you understand the foundations behind bas
 ---
 
 ## How to Run
-
-No installation required.
-
-### Open directly
 Open the file in your browser after downloading:
 
 finalcyb.html
@@ -79,10 +72,11 @@ finalcyb.html
 
 ## Project Structure
 
-/
- └── finalcyb.html   # Entire game (HTML + CSS + JS in one file)
+ finalcyb.html   # Entire game (HTML + CSS + JS in one file)
 
 Single-file design keeps deployment simple and portable for class use
+
+<img width="2000" height="1500" alt="image" src="https://github.com/user-attachments/assets/3ca91dbd-c447-4c43-a394-aac18f5c4bf9" />
 
 ---
 
