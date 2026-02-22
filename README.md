@@ -67,12 +67,12 @@ If you can solve every level manually, you understand the foundations behind bas
 ## How to Run
 Open the file in your browser after downloading:
 
-finalcyb.html
+cipherchase.html
 
 
 ## Project Structure
 
- finalcyb.html   # Entire game (HTML + CSS + JS in one file)
+Entire game (HTML + CSS + JS in one file)
 
 Single-file design keeps deployment simple and portable for class use
 
