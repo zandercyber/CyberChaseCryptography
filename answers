@@ -1,0 +1,23 @@
+// ===== QUESTION BANKS =====
+        const questionBanks = {
+            caesarDecrypt: [
+                { ciphertext: "WKH GRJ IURJ", shift: 3, answer: "the dog frog" },
+                { ciphertext: "SBWKRQ VHFUHW", shift: 3, answer: "python secret" },
+                { ciphertext: "FOLS WKH FDW", shift: 3, answer: "clip the cat" }
+            ],
+            caesarEncrypt: [
+                { plaintext: "HELLO", shift: 4, answer: "LIPPS" },
+                { plaintext: "WORLD", shift: 4, answer: "ASVPH" },
+                { plaintext: "CRYPTO", shift: 4, answer: "GVCTXS" }
+            ],
+            sbox: [
+                { input: "011011", answer: "1100" },
+                { input: "101010", answer: "0000" },
+                { input: "110011", answer: "1100" }
+            ],
+            rsa: [
+                { m: 3, e: 7, n: 33, answer: "9" },
+                { m: 5, e: 3, n: 14, answer: "13" },
+                { m: 2, e: 5, n: 10, answer: "2" }
+            ]
+        };
