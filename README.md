@@ -2,8 +2,6 @@
 
 An interactive browser-based cryptography challenge game that teaches core cybersecurity and encryption concepts through hands-on puzzles.
 
-Built using pure HTML, CSS, and JavaScript to demonstrate logic-first engineering without frameworks or libraries.
-
 ---
 
 ## Overview
@@ -75,6 +73,8 @@ cipherchase.html
 Entire game (HTML + CSS + JS in one file)
 
 Single-file design keeps deployment simple and portable for class use
+
+## Screenshots
 
 <img width="2000" height="1500" alt="image" src="https://github.com/user-attachments/assets/3ca91dbd-c447-4c43-a394-aac18f5c4bf9" />
 
