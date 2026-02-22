@@ -78,6 +78,15 @@ Single-file design keeps deployment simple and portable for class use
 
 <img width="2000" height="1500" alt="image" src="https://github.com/user-attachments/assets/3ca91dbd-c447-4c43-a394-aac18f5c4bf9" />
 
+<img width="2873" height="1620" alt="image" src="https://github.com/user-attachments/assets/feb6aca2-1246-493b-b688-563d528cdebe" />
+
+<img width="2835" height="1544" alt="image" src="https://github.com/user-attachments/assets/bc42ab65-6790-4577-ab62-0f956025dd7b" />
+
+<img width="2878" height="1468" alt="image" src="https://github.com/user-attachments/assets/8672cc8a-ca9f-4d83-99c7-0c3b902c5dad" />
+
+
+<img width="1851" height="663" alt="image" src="https://github.com/user-attachments/assets/b5814247-a91e-48a3-aa10-4c5de746a4b7" />
+
 ---
 
 ## Why I Built This
